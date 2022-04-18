@@ -1,0 +1,21 @@
+.row {
+  display: flex;
+  justify-content: center;
+}
+
+.cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  background: rgb(143, 153, 143);
+  margin: 1px;
+  user-select: none;
+}
+.cell:not(.hide) {
+  background: rgb(192, 192, 192);
+}
+.hide:hover {
+  background: rgb(98, 105, 98);
+}
