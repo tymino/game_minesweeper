@@ -13,9 +13,12 @@
   margin: 1px;
   user-select: none;
 }
+.flag {
+  background: red;
+}
 .cell:not(.hide) {
   background: rgb(192, 192, 192);
 }
-.hide:hover {
+.hide:hover:not(.flag) {
   background: rgb(98, 105, 98);
 }

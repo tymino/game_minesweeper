@@ -4,13 +4,25 @@ export default class Game {
   constructor() {
     this.countBombs = 10;
     this.gridSize = 8;
-
     this.gameGrid = [];
+    this.gameOver = false;
 
     this.initGameGrid();
   }
 
-  initGameGrid() {
+  getGameOver = () => this.gameOver;
+  setGameOver = () => (this.gameOver = true);
+
+  checkGameOver = () => {
+    const localGameGrid = this.gameGrid.flat(1);
+
+    localGameGrid.forEach((cell) => {
+      if (cell.getValue() === 0) {
+      }
+    });
+  };
+
+  initGameGrid = () => {
     for (let i = 0; i < this.gridSize; i++) {
       let row = [];
 
@@ -45,23 +57,33 @@ export default class Game {
         count++;
       }
     }
-  }
+  };
 
-  checkEdgesGrid(dy, dx) {
+  checkEdgesGrid = (dy, dx) => {
     const boolZero = dx < 0 || dy < 0;
     const boolLength = dx >= this.gameGrid.length || dy >= this.gameGrid.length;
 
     return boolZero || boolLength;
-  }
+  };
 
-  floodValue(dy, dx) {
+  floodValue = (dy, dx) => {
     if (this.checkEdgesGrid(dy, dx) || this.gameGrid[dy][dx].hasBomb()) return;
 
     this.gameGrid[dy][dx].addValue();
-  }
+  };
 
-  openCell(dy, dx, button) {
-    if (this.checkEdgesGrid(dy, dx) || this.gameGrid[dy][dx].getVisible()) {
+  openCell = (dy, dx, button) => {
+    if (button === 2) {
+      this.gameGrid[dy][dx].toggleFlag();
+      return;
+    }
+    this.checkGameOver();
+
+    if (
+      this.checkEdgesGrid(dy, dx) ||
+      this.gameGrid[dy][dx].getVisible() ||
+      this.gameGrid[dy][dx].getFlag()
+    ) {
       return;
     }
 
@@ -80,9 +102,9 @@ export default class Game {
       this.openCell(dy + 1, dx);
       this.openCell(dy + 1, dx + 1);
     }
-  }
+  };
 
-  updateGrid() {
+  updateGrid = () => {
     const child = document.querySelector('.container');
 
     if (child) {
@@ -103,6 +125,9 @@ export default class Game {
         if (this.gameGrid[posY][posX].getVisible()) {
           cell.classList.add('cell');
           cell.textContent = this.gameGrid[posY][posX].getValue();
+        } else if (this.gameGrid[posY][posX].getFlag()) {
+          cell.classList.add('cell', 'hide', 'flag');
+          cell.textContent = 'F';
         } else {
           cell.textContent = this.gameGrid[posY][posX].getValue();
           cell.classList.add('cell', 'hide');
@@ -116,5 +141,5 @@ export default class Game {
 
       container.append(divRow);
     });
-  }
+  };
 }

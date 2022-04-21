@@ -117,8 +117,6 @@
 
 import Game from './classes/Game.js';
 
-
-
 const game = new Game();
 
 document.addEventListener('click', handleClick);
@@ -127,7 +125,7 @@ document.addEventListener('contextmenu', handleClick);
 function handleClick(event) {
   event.preventDefault();
 
-  if (event.target.classList.contains('cell')) {
+  if (event.target.classList.contains('cell') && !game.getGameOver()) {
     const y = Number(event.target.dataset.posY);
     const x = Number(event.target.dataset.posX);
 
@@ -136,4 +134,4 @@ function handleClick(event) {
   }
 }
 
-game.updateGrid()
+game.updateGrid();

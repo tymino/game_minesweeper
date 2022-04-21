@@ -15,7 +15,7 @@ export default class Cell {
   setVisible = () => (this.visible = true);
 
   getFlag = () => this.flag;
-  setFlag = () => this.flag = true;
+  toggleFlag = () => this.flag = !this.flag;
 
   hasBomb = () => this.value === BOMB;
   setBomb = () => (this.value = BOMB);
