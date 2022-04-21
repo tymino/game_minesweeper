@@ -1,31 +1,66 @@
-let row = new Array(10).fill({ value: 0, visible: false });
-let gameGrid = new Array(10).fill(row);
+const MINE = 'm';
+const cellTemplate = { value: 0, visible: false };
+
+let gameGrid = [];
+
+for (let i = 0; i < 10; i++) {
+  let row = [];
+  for (let j = 0; j < 10; j++) {
+    row.push(cellTemplate);
+  }
+  gameGrid.push(row);
+}
 
 let count = 0;
+
+const checkEdgesGrid = (dy, dx) => {
+  const boolZero = dx < 0 || dy < 0;
+  const boolLength = dx >= gameGrid.length || dy >= gameGrid.length;
+
+  if (boolZero || boolLength || gameGrid[dy][dx].value === MINE) return;
+
+  floodValue(dy, dx);
+};
+
+function floodValue(dy, dx) {
+  gameGrid[dy][dx] = { value: gameGrid[dy][dx].value + 1, visible: false };
+}
 
 // flood
 while (count < 10) {
   const x = Math.floor(Math.random() * 10);
   const y = Math.floor(Math.random() * 10);
 
-  gameGrid = gameGrid.map((r, px) => {
-    return r.map((c, py) => {
-      if (px === x && py === y) {
-        count++;
-        return { value: 'mine', visible: true };
-      }
-      return c;
-    });
-  });
+  if (gameGrid[y][x].value !== MINE) {
+    gameGrid[y][x] = { value: MINE, visible: true };
+
+    // top
+    checkEdgesGrid(y - 1, x - 1);
+    checkEdgesGrid(y - 1, x);
+    checkEdgesGrid(y - 1, x + 1);
+
+    // mid
+    checkEdgesGrid(y, x - 1);
+    checkEdgesGrid(y, x + 1);
+
+    // bottom
+    checkEdgesGrid(y + 1, x - 1);
+    checkEdgesGrid(y + 1, x);
+    checkEdgesGrid(y + 1, x + 1);
+
+    count++;
+  }
 }
 
 function clickCell(event) {
   if (event.target.classList.contains('cell')) {
-    const x = event.target.dataset.posX;
     const y = event.target.dataset.posY;
+    const x = event.target.dataset.posX;
+
+    console.log(gameGrid[y][x]);
 
     event.target.classList.remove('hide');
-    event.target.textContent = gameGrid[x][y].value;
+    event.target.textContent = gameGrid[y][x].value;
   }
 }
 
@@ -40,8 +75,8 @@ gameGrid.forEach((r, posY) => {
 
     cell.textContent = _.value;
 
-    cell.dataset.posX = posX;
     cell.dataset.posY = posY;
+    cell.dataset.posX = posX;
 
     divRow.append(cell);
   });
