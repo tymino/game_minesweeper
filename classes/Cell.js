@@ -4,6 +4,7 @@ export default class Cell {
   constructor() {
     this.value = 0;
     this.visible = false;
+    this.flag = false;
   }
 
   getValue = () => this.value;
@@ -12,6 +13,9 @@ export default class Cell {
 
   getVisible = () => this.visible;
   setVisible = () => (this.visible = true);
+
+  getFlag = () => this.flag;
+  setFlag = () => this.flag = true;
 
   hasBomb = () => this.value === BOMB;
   setBomb = () => (this.value = BOMB);
