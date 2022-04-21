@@ -1,84 +1,118 @@
-const MINE = 'm';
-const cellTemplate = { value: 0, visible: false };
+import Cell from './classes/Cell.js';
+
+const GAME_SIZE = 8;
+const GAME_COUNT_BOMBS = 10;
 
 let gameGrid = [];
 
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < GAME_SIZE; i++) {
   let row = [];
-  for (let j = 0; j < 10; j++) {
-    row.push(cellTemplate);
+  for (let j = 0; j < GAME_SIZE; j++) {
+    row.push(new Cell());
   }
   gameGrid.push(row);
 }
 
 let count = 0;
 
-const checkEdgesGrid = (dy, dx) => {
+function checkEdgesGrid(dy, dx) {
   const boolZero = dx < 0 || dy < 0;
   const boolLength = dx >= gameGrid.length || dy >= gameGrid.length;
 
-  if (boolZero || boolLength || gameGrid[dy][dx].value === MINE) return;
-
-  floodValue(dy, dx);
-};
+  return boolZero || boolLength;
+}
 
 function floodValue(dy, dx) {
-  gameGrid[dy][dx] = { value: gameGrid[dy][dx].value + 1, visible: false };
+  if (checkEdgesGrid(dy, dx) || gameGrid[dy][dx].hasBomb()) return;
+
+  gameGrid[dy][dx].addValue();
 }
 
 // flood
-while (count < 10) {
-  const x = Math.floor(Math.random() * 10);
-  const y = Math.floor(Math.random() * 10);
+while (count < GAME_COUNT_BOMBS) {
+  const x = Math.floor(Math.random() * GAME_SIZE);
+  const y = Math.floor(Math.random() * GAME_SIZE);
 
-  if (gameGrid[y][x].value !== MINE) {
-    gameGrid[y][x] = { value: MINE, visible: true };
+  if (!gameGrid[y][x].hasBomb()) {
+    gameGrid[y][x].setBomb();
 
     // top
-    checkEdgesGrid(y - 1, x - 1);
-    checkEdgesGrid(y - 1, x);
-    checkEdgesGrid(y - 1, x + 1);
-
+    floodValue(y - 1, x - 1);
+    floodValue(y - 1, x);
+    floodValue(y - 1, x + 1);
     // mid
-    checkEdgesGrid(y, x - 1);
-    checkEdgesGrid(y, x + 1);
-
+    floodValue(y, x - 1);
+    floodValue(y, x + 1);
     // bottom
-    checkEdgesGrid(y + 1, x - 1);
-    checkEdgesGrid(y + 1, x);
-    checkEdgesGrid(y + 1, x + 1);
+    floodValue(y + 1, x - 1);
+    floodValue(y + 1, x);
+    floodValue(y + 1, x + 1);
 
     count++;
   }
 }
 
-function clickCell(event) {
+document.body.addEventListener('click', handleClick);
+
+function handleClick(event) {
   if (event.target.classList.contains('cell')) {
-    const y = event.target.dataset.posY;
-    const x = event.target.dataset.posX;
+    const y = Number(event.target.dataset.posY);
+    const x = Number(event.target.dataset.posX);
 
-    console.log(gameGrid[y][x]);
-
-    event.target.classList.remove('hide');
-    event.target.textContent = gameGrid[y][x].value;
+    openCell(y, x);
+    updateGrid();
   }
 }
 
-document.body.addEventListener('click', clickCell);
+function openCell(dy, dx) {
+  if (checkEdgesGrid(dy, dx) || gameGrid[dy][dx].getVisible()) {
+    return;
+  }
 
-gameGrid.forEach((r, posY) => {
-  const divRow = document.createElement('div');
-  divRow.classList.add('row');
-  r.forEach((_, posX) => {
-    const cell = document.createElement('div');
-    cell.classList.add('cell', 'hide');
+  gameGrid[dy][dx].setVisible();
 
-    cell.textContent = _.value;
+  if (gameGrid[dy][dx].getValue() === 0) {
+    openCell(dy - 1, dx); // up
+    openCell(dy, dx + 1); // right
+    openCell(dy + 1, dx); // down
+    openCell(dy, dx - 1); // left
+  }
+}
 
-    cell.dataset.posY = posY;
-    cell.dataset.posX = posX;
+function updateGrid() {
+  const child = document.querySelector('.container');
 
-    divRow.append(cell);
+  if (child) {
+    document.body.removeChild(child);
+  }
+
+  const container = document.createElement('div');
+  container.classList.add('container');
+  document.body.append(container);
+
+  gameGrid.forEach((r, posY) => {
+    const divRow = document.createElement('div');
+    divRow.classList.add('row');
+
+    r.forEach((_, posX) => {
+      const cell = document.createElement('div');
+
+      if (gameGrid[posY][posX].getVisible()) {
+        cell.classList.add('cell');
+        cell.textContent = gameGrid[posY][posX].getValue();
+      } else {
+        cell.textContent = gameGrid[posY][posX].getValue();
+        cell.classList.add('cell', 'hide');
+      }
+
+      cell.dataset.posY = posY;
+      cell.dataset.posX = posX;
+
+      divRow.append(cell);
+    });
+
+    container.append(divRow);
   });
-  document.body.append(divRow);
-});
+}
+
+updateGrid();
