@@ -1,7 +1,6 @@
-const BOMB = 'B';
-
 export default class Cell {
   constructor() {
+    this.bombSprite = 'B';
     this.value = 0;
     this.visible = false;
     this.flag = false;
@@ -15,10 +14,8 @@ export default class Cell {
   setVisible = () => (this.visible = true);
 
   getFlag = () => this.flag;
-  toggleFlag = () => this.flag = !this.flag;
+  toggleFlag = () => (this.flag = !this.flag);
 
-  hasBomb = () => this.value === BOMB;
-  setBomb = () => (this.value = BOMB);
-
-  update() {}
+  hasBomb = () => this.value === this.bombSprite;
+  setBomb = () => (this.value = this.bombSprite);
 }

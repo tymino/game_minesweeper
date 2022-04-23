@@ -1,24 +1,109 @@
+:root {
+  --white: rgb(255, 255, 255);
+  --black: rgb(49, 49, 49);
+  --opened: rgb(48, 211, 48);
+  --close: rgb(155, 155, 155);
+  --close-hover: rgb(136, 136, 136);
+  --flag: rgb(248, 51, 51);
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .row {
   display: flex;
   justify-content: center;
 }
 
 .cell {
+  zoom: 2;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 30px;
-  height: 30px;
-  background: rgb(143, 153, 143);
+  width: 16px;
+  height: 16px;
   margin: 1px;
+  background: var(--close);
+  color: var(--white);
+  box-shadow: -0.6px -0.7px 1px 0px var(--black);
   user-select: none;
 }
 .flag {
-  background: red;
+  background: var(--flag);
+  box-shadow: none;
 }
 .cell:not(.hide) {
-  background: rgb(192, 192, 192);
+  background: var(--opened);
+  box-shadow: none;
 }
 .hide:hover:not(.flag) {
-  background: rgb(98, 105, 98);
+  background: var(--close-hover);
+}
+
+.bomb {
+  color: var(--flag);
+}
+
+.restart {
+  height: 40px;
+  width: 100px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  background: var(--close);
+  border: none;
+  box-shadow: -1.6px -1px 3px 0px var(--black);
+  color: var(--white);
+  font-size: 1.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.restart:hover {
+  background: var(--close-hover);
+}
+.restart:active {
+  background: var(--close);
+  box-shadow: none;
+}
+
+.lose {
+  background: none;
+  border: 1px solid var(--flag);
+  box-shadow: -1.6px -1px 3px 0px var(--close-hover);
+  color: var(--flag);
+}
+.lose:hover {
+  background: var(--flag);
+  border: 1px solid var(--flag);
+  color: var(--white);
+}
+.lose:active {
+  background: none;
+  border: 1px solid var(--flag);
+  box-shadow: none;
+  color: var(--flag);
+}
+
+.win {
+  background: none;
+  border: 1px solid var(--opened);
+  box-shadow: -1.6px -1px 3px 0px var(--close-hover);
+  color: var(--opened);
+}
+.win:hover {
+  background: var(--opened);
+  border: 1px solid var(--opened);
+  color: var(--white);
+}
+.win:active {
+  background: none;
+  border: 1px solid var(--opened);
+  box-shadow: none;
+  color: var(--opened);
 }

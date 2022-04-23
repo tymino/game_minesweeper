@@ -6,6 +6,7 @@ export default class Game {
     this.countBombs = 10;
     this.gridSize = 8;
     this.gameGrid = [];
+    this.activeGameStatus = 0;
     this.gameOver = false;
 
     this.view = new View();
@@ -16,16 +17,55 @@ export default class Game {
   getGameOver = () => this.gameOver;
   setGameOver = () => (this.gameOver = true);
 
-  checkGameOver = () => {
+  setGameStatus(val) {
+    switch (val) {
+      case -1:
+        this.activeGameStatus = -1;
+        break;
+
+      case 1:
+        this.activeGameStatus = 1;
+        break;
+
+      default:
+        this.activeGameStatus = 0;
+        break;
+    }
+  }
+
+  restartGame() {
+    this.gameGrid = [];
+    this.gameOver = false;
+
+    this.setGameStatus(0);
+    this.initGameGrid();
+    this.updateGrid();
+  }
+
+  checkGameOver() {
     const localGameGrid = this.gameGrid.flat(1);
+    let counter = 0;
 
     localGameGrid.forEach((cell) => {
-      if (cell.getValue() === 0) {
+      if (cell.hasBomb(0) && cell.getVisible()) {
+        this.setGameOver();
+        this.setGameStatus(-1);
+      }
+
+      if (!cell.hasBomb(0) && cell.getVisible()) {
+        counter++;
+
+        if (counter === this.gameGrid.flat(1).length - this.countBombs) {
+          this.setGameOver();
+          this.setGameStatus(1);
+
+          console.log(counter);
+        }
       }
     });
-  };
+  }
 
-  initGameGrid = () => {
+  initGameGrid() {
     for (let i = 0; i < this.gridSize; i++) {
       let row = [];
 
@@ -60,27 +100,26 @@ export default class Game {
         count++;
       }
     }
-  };
+  }
 
-  checkEdgesGrid = (dy, dx) => {
+  checkEdgesGrid(dy, dx) {
     const boolZero = dx < 0 || dy < 0;
     const boolLength = dx >= this.gameGrid.length || dy >= this.gameGrid.length;
 
     return boolZero || boolLength;
-  };
+  }
 
-  floodValue = (dy, dx) => {
+  floodValue(dy, dx) {
     if (this.checkEdgesGrid(dy, dx) || this.gameGrid[dy][dx].hasBomb()) return;
 
     this.gameGrid[dy][dx].addValue();
-  };
+  }
 
-  openCell = (dy, dx, button) => {
+  openCell(dy, dx, button) {
     if (button === 2) {
       this.gameGrid[dy][dx].toggleFlag();
       return;
     }
-    this.checkGameOver();
 
     if (
       this.checkEdgesGrid(dy, dx) ||
@@ -105,9 +144,11 @@ export default class Game {
       this.openCell(dy + 1, dx);
       this.openCell(dy + 1, dx + 1);
     }
-  };
 
-  updateGrid = () => {
-    this.view.updateView(this.gameGrid);
-  };
+    this.checkGameOver();
+  }
+
+  updateGrid() {
+    this.view.updateView(this.gameGrid, this.activeGameStatus);
+  }
 }
