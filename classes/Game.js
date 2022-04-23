@@ -1,4 +1,5 @@
 import Cell from './Cell.js';
+import View from './View.js';
 
 export default class Game {
   constructor() {
@@ -6,6 +7,8 @@ export default class Game {
     this.gridSize = 8;
     this.gameGrid = [];
     this.gameOver = false;
+
+    this.view = new View();
 
     this.initGameGrid();
   }
@@ -105,41 +108,6 @@ export default class Game {
   };
 
   updateGrid = () => {
-    const child = document.querySelector('.container');
-
-    if (child) {
-      document.body.removeChild(child);
-    }
-
-    const container = document.createElement('div');
-    container.classList.add('container');
-    document.body.append(container);
-
-    this.gameGrid.forEach((r, posY) => {
-      const divRow = document.createElement('div');
-      divRow.classList.add('row');
-
-      r.forEach((_, posX) => {
-        const cell = document.createElement('div');
-
-        if (this.gameGrid[posY][posX].getVisible()) {
-          cell.classList.add('cell');
-          cell.textContent = this.gameGrid[posY][posX].getValue();
-        } else if (this.gameGrid[posY][posX].getFlag()) {
-          cell.classList.add('cell', 'hide', 'flag');
-          cell.textContent = 'F';
-        } else {
-          cell.textContent = this.gameGrid[posY][posX].getValue();
-          cell.classList.add('cell', 'hide');
-        }
-
-        cell.dataset.posY = posY;
-        cell.dataset.posX = posX;
-
-        divRow.append(cell);
-      });
-
-      container.append(divRow);
-    });
+    this.view.updateView(this.gameGrid);
   };
 }
