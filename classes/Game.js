@@ -58,8 +58,6 @@ export default class Game {
         if (counter === this.gameGrid.flat(1).length - this.countBombs) {
           this.setGameOver();
           this.setGameStatus(1);
-
-          console.log(counter);
         }
       }
     });
